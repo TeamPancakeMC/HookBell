@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "hook_bell:hook_bell"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "hook_bell:blocks/hook_bell"
+}
