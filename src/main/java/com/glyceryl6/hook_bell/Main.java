@@ -1,6 +1,8 @@
 package com.glyceryl6.hook_bell;
 
 import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemNameBlockItem;
@@ -17,11 +19,15 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Mod(Main.MOD_ID)
 @SuppressWarnings("ConstantConditions")
@@ -40,6 +46,8 @@ public class Main {
 
     public static final ModelLayerLocation HOOK_BELL_LAYER = new ModelLayerLocation(HOOK_BELL_ITEM.getId(), "main");
 
+    public static final Set<EntityType<?>> ENTITY_TYPES_IN_CONFIG = new HashSet<>();
+
     public Main() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, MainConfig.SPEC, "hook_bell.toml");
@@ -50,7 +58,15 @@ public class Main {
         modEventBus.addListener(this::buildContents);
         modEventBus.addListener(this::registerRenderers);
         modEventBus.addListener(this::registerLayers);
+        modEventBus.addListener(this::commonSetup);
         MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    public void commonSetup(FMLCommonSetupEvent event) {
+        for (String id : MainConfig.HookBellBlackList.get()) {
+            EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(id));
+            if (entityType != null) ENTITY_TYPES_IN_CONFIG.add(entityType);
+        }
     }
 
     @OnlyIn(Dist.CLIENT)
