@@ -1,9 +1,9 @@
 package com.glyceryl6.hook_bell;
 
+import com.glyceryl6.hook_bell.api.ExtendedEntityType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -15,9 +15,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class HookBellBlockEntity extends BlockEntity {
@@ -145,7 +143,7 @@ public class HookBellBlockEntity extends BlockEntity {
     private boolean isRaiderWithinRange(LivingEntity livingEntity) {
         return livingEntity.isAlive() && !livingEntity.isRemoved() &&
                 this.areRaidersClose(livingEntity) && livingEntity.getType().is(EntityTypeTags.RAIDERS) &&
-                !hasEntityTypesConfig(MainConfig.HookBellBlackList.get(), livingEntity.getType());
+                !hasEntityTypesConfig(livingEntity.getType());
     }
 
     @SuppressWarnings("resource")
@@ -163,21 +161,8 @@ public class HookBellBlockEntity extends BlockEntity {
         }
     }
 
-    private static List<EntityType<?>> getEntityTypesConfig(List<? extends String> config){
-        List<EntityType<?>> list = new ArrayList<>();
-        if (!config.isEmpty()) {
-            for (String id : config){
-                EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(id));
-                if (entityType != null) {
-                    list.add(entityType);
-                }
-            }
-        }
-        return list;
-    }
-
-    private static boolean hasEntityTypesConfig(List<? extends String> config, EntityType<?> entityType){
-        return !getEntityTypesConfig(config).isEmpty() && getEntityTypesConfig(config).contains(entityType);
+    private static boolean hasEntityTypesConfig(EntityType<?> entityType){
+        return !MainConfig.HookBellBlackList.get().isEmpty() && ((ExtendedEntityType)entityType).hookBell$isBlacklisted();
     }
 
 }
